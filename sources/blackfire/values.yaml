@@ -9,6 +9,10 @@ image:
   tag: "1.17.0"
   pullPolicy: IfNotPresent
 
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
 service:
   type: ClusterIP
   port: 80
