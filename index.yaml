@@ -3,20 +3,19 @@ entries:
   blackfire:
   - apiVersion: v1
     appVersion: 1.17.0
-    created: "2020-07-11T16:56:53.424661+02:00"
+    created: "2020-07-11T17:05:02.079316+02:00"
     description: An unofficial Helm chart for Blackfire.io
-    digest: 847ac6e7be03a98dd0736d982c874cf8f1ab19c61d0d6482582db49cccf93204
+    digest: e15ed3a48ce913fcc0f405c07cb5d6ebff570b005fb431539098b71014dac0ed
     home: https://blackfire.io/
     name: blackfire
     sources:
     - http://blackfire.io
-    type: application
     urls:
     - https://ribeiroplinio.github.io/helm-chart/blackfire-0.3.0.tgz
     version: 0.3.0
   - apiVersion: v1
     appVersion: 1.17.0
-    created: "2020-07-11T16:56:53.423873+02:00"
+    created: "2020-07-11T17:05:02.0787+02:00"
     description: An unofficial Helm chart for Blackfire.io
     digest: 81518932ca861b63d97c3d27e95755da16c561b1d861832a3b7239770dd3129e
     home: https://blackfire.io/
@@ -29,7 +28,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: 1.17.0
-    created: "2020-07-11T16:56:53.423188+02:00"
+    created: "2020-07-11T17:05:02.077686+02:00"
     description: An unofficial Helm chart for Blackfire.io
     digest: 5b7ab97c5520461806478d2cb74bd3bcc2f8bb33068ff7264cc4c63acdc995a5
     home: https://blackfire.io/
@@ -40,4 +39,4 @@ entries:
     urls:
     - https://ribeiroplinio.github.io/helm-chart/blackfire-0.1.0.tgz
     version: 0.1.0
-generated: "2020-07-11T16:56:53.420717+02:00"
+generated: "2020-07-11T17:05:02.073938+02:00"
