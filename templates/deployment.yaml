@@ -1,27 +1,28 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "blackfire.fullname" . }}
+  name: {{ include "blackfire.fullname" . }}
   labels:
-    app: {{ template "blackfire.name" . }}
-    chart: {{ template "blackfire.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "blackfire.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "blackfire.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "blackfire.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ template "blackfire.name" . }}
-        release: {{ .Release.Name }}
+        {{- include "blackfire.selectorLabels" . | nindent 8 }}
     spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: BLACKFIRE_SERVER_ID
@@ -42,8 +43,6 @@ spec:
               {{- else }}
               value: {{ .Values.blackfire.server_token }}
               {{- end }}
-            - name: BLACKFIRE_LOG_LEVEL
-              value: {{ .Values.blackfire.log_level | default 1 | quote }}
           ports:
             - name: agent
               containerPort: 8707
@@ -55,16 +54,16 @@ spec:
             tcpSocket:
               port: agent
           resources:
-{{ toYaml .Values.resources | indent 12 }}
-    {{- with .Values.nodeSelector }}
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     {{- with .Values.affinity }}
       affinity:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
     {{- end }}
     {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
     {{- end }}

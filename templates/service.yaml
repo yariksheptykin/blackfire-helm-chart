@@ -1,19 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "blackfire.fullname" . }}
+  name: {{ include "blackfire.fullname" . }}
   labels:
-    app: {{ template "blackfire.name" . }}
-    chart: {{ template "blackfire.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "blackfire.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: agent
+      targetPort: http
       protocol: TCP
-      name: agent
+      name: http
   selector:
-    app: {{ template "blackfire.name" . }}
-    release: {{ .Release.Name }}
+    {{- include "blackfire.selectorLabels" . | nindent 4 }}
