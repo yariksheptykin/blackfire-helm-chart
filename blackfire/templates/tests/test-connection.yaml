@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "blackfire.fullname" . }}-test-connection"
+  labels:
+{{ include "blackfire.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: blackfire
+      image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+      command: ['blackfire']
+      args:
+        - 'agent:healthcheck'
+        - '--socket'
+        - 'tcp://{{ include "blackfire.fullname" . }}:{{ .Values.service.port }}'
+      env:
+        - name: BLACKFIRE_CLIENT_ID
+          {{- if .Values.blackfire.existingSecret }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.blackfire.existingSecret }}
+              key: client_id
+          {{- else }}
+          value: {{ .Values.blackfire.client_id }}
+          {{- end }}
+        - name: BLACKFIRE_CLIENT_TOKEN
+          {{- if .Values.blackfire.existingSecret }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.blackfire.existingSecret }}
+              key: client_token
+          {{- else }}
+          value: {{ .Values.blackfire.client_token }}
+          {{- end }}
+  restartPolicy: Never

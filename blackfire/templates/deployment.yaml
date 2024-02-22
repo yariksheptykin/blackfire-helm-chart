@@ -25,6 +25,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: BLACKFIRE_SOCKET
+              value: {{ .Values.blackfire.socket | default "tcp://0.0.0.0:8307" | quote }}
             - name: BLACKFIRE_SERVER_ID
               {{- if .Values.blackfire.existingSecret }}
               valueFrom:
@@ -43,11 +45,31 @@ spec:
               {{- else }}
               value: {{ .Values.blackfire.server_token }}
               {{- end }}
+            - name: BLACKFIRE_CLIENT_ID
+              {{- if .Values.blackfire.existingSecret }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.blackfire.existingSecret }}
+                  key: client_id
+              {{- else }}
+              value: {{ .Values.blackfire.client_id }}
+              {{- end }}
+            - name: BLACKFIRE_CLIENT_TOKEN
+              {{- if .Values.blackfire.existingSecret }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.blackfire.existingSecret }}
+                  key: client_token
+              {{- else }}
+              value: {{ .Values.blackfire.client_token }}
+              {{- end }}
             - name: BLACKFIRE_LOG_LEVEL
               value: {{ .Values.blackfire.log_level | default 1 | quote }}
+            - name: BLACKFIRE_DISABLE_LEGACY_PORT
+              value: "non-null"
           ports:
             - name: agent
-              containerPort: 8707
+              containerPort: 8307
               protocol: TCP
           livenessProbe:
             tcpSocket:

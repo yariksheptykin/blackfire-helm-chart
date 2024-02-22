@@ -1,0 +1,35 @@
+# Blackfire Helm Chart
+
+This Helm Chart deploys (blackfire)[https://docs.blackfire.io/introduction] agent your kubernetes cluster and makes it available via a service.
+
+To profile your php application using blackfire, you need to install blackfire probe in your php container and configure it to use the blackfire agent.
+See: https://docs.blackfire.io/php/configuration
+
+1. Make sure that php probe is installed in php container. If not [install php probe](https://blackfire.io/docs/integrations/docker#installing-the-blackfire-probe-in-your-docker-image) in your php container.
+```
+php -m | grep blackfire
+```
+
+2. Define the following environment variables in php container:
+```
+BLACKFIRE_AGENT_SOCKET=tcp://{{ include "blackfire.fullname" . }}:{{ .Values.service.port }}
+BLACKFIRE_CLIENT_ID={{ .Values.blackfire.client_id | default "<your-client-id>"}}
+BLACKFIRE_CLIENT_TOKEN={{ .Values.blackfire.client_token | default "<your-client-token>"}}
+```
+
+3. (Optionally) Install blackfire CLI in your php container
+```
+cd /tmp
+wget https://blackfire.io/api/v1/releases/cli/linux/amd64 -O blackfire.tar.gz
+tar zxpf blackfire.tar.gz
+chmod +x blackfire
+mv blackfire /usr/local/bin/blackfire
+
+blackfire healthcheck
+```
+
+Alternatively, you can use blackfire CLI installed in the blackfire agent pod to profile your php application.
+```
+export BLACKFIRE_POD=$(kubectl get pods -l app.kubernetes.io/name={{ include "blackfire.name" . }} -o jsonpath="{.items[0].metadata.name}")
+kubectl exec -it $BLACKFIRE_POD -- blackfire curl http://<your-php-service>
+```

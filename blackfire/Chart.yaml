@@ -1,0 +1,8 @@
+apiVersion: v1
+name: blackfire
+description: An unofficial Helm chart for Blackfire.io
+home: https://blackfire.io/
+sources:
+  - http://blackfire.io
+version: 1.0.0
+appVersion: 2
