@@ -1,0 +1,51 @@
+name: Release Helm Chart
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'latest'
+
+      - name: Package Helm Chart
+        run: |
+          helm package .
+          echo "CHART_PACKAGE=$(ls *.tgz)" >> $GITHUB_ENV
+
+      - name: Login to GitHub Container Registry
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push Helm Chart to GHCR
+        run: |
+          helm push ${{ env.CHART_PACKAGE }} oci://ghcr.io/${{ github.repository_owner }}
+
+      - name: Logout from GitHub Container Registry
+        if: always()
+        run: |
+          helm registry logout ghcr.io
